@@ -13,6 +13,15 @@
             (- x (char-to-int \z) 1)
             x)))
 
+(defn find-repetitions [coll]
+  (loop [i 1]
+    (if (= i (count coll))
+      coll
+      (let [partitioned-coll (partition i coll)]
+        (if (apply = partitioned-coll)
+          (first partitioned-coll)
+          (recur (inc i)))))))
+
 (defn encode [keyword message]
   (let [keyword-keys (map char-to-int keyword)
         message-keys (map char-to-int message)
@@ -28,5 +37,8 @@
   (apply str (map int-to-char normalized-keys))))
 
 (defn decipher [cipher message]
-  "decypherme")
-
+    (let [message-keys (map char-to-int message)
+          cipher-keys (map char-to-int cipher)
+          diffed-keys  (map - cipher-keys message-keys)
+          normalized-keys (map normalize diffed-keys)]
+      (apply str (map int-to-char(find-repetitions normalized-keys)))))
